@@ -150,7 +150,106 @@ SELECT event_dt
 FROM events_with_lag
 WHERE event_dt - prev_event_dt >= 7
 -- Задача 6
-WITH 
+WITH all AS (
+    SELECT
+        ticket_id,
+        changed_at,
+        status,
+        LAG(status) OVER (PARTITION BY ticket_id ORDER BY changed_at) AS prev_status
+    FROM ticket_status
+)
+SELECT
+    ticket_id,
+    changed_at,
+    status
+FROM all
+WHERE status != prev_status
+-- Задача 7
+SELECT
+    LEAD(visit_id) OVER (PARTITION BY client_id) - visit_id
+FROM visits
+-- Задача 8
+SELECT
+    stock_cnt - LAG(stock_cnt) OVER(PARTITION BY sku_id ORDER BY stock_dt)
+FROM stock
+-- Задача 9
+WITH all AS (
+    SELECT
+        dt,
+        amount,
+        LAG(amount) OVER(ORDER BY dt) AS lag_amount
+    FROM revenue
+)
+SELECT
+    dt
+FROM all
+WHERE lag_amount < amount
+-- Задача 10
+WITH all AS (
+    SELECT
+        event_dt,
+        LEAD(event_dt) OVER(PARTITION BY event_dt ORDER BY event_dt) AS lead_event_dt
+)
+SELECT event_dt
+WHERE lead_event_dt - event_dt > 1
+--NULL'ы
+-- Задача 1
+SELECT
+    account_id
+FROM accounts
+WHERE close_dt is NULL
+-- Задача 2
+SELECT
+    COALESCE(balance, 0) AS balance
+FROM accounts
+-- Задача 3
+SELECT
+    COUNT(*) AS all_count
+    COUNT(phone) AS phone_count
+FROM clients
+-- Задача 4
+SELECT 
+    c.client_id
+FROM clients c
+LEFT JOIN orders o
+ON c.client_id = o.client_id
+WHERE o.order_id is NULL
+-- Задача 5
+WITH blacklist_not_null AS (
+    SELECT client_id
+    FROM blacklist
+    WHERE client_id IS NOT NULL
+)
+SELECT c.client_id
+FROM clients c
+LEFT JOIN blacklist_not_null b
+ON c.client_id = b.client_id
+WHERE b.client_id IS NULL
+-- Задача 6
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
