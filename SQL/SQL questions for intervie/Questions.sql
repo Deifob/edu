@@ -226,13 +226,167 @@ LEFT JOIN blacklist_not_null b
 ON c.client_id = b.client_id
 WHERE b.client_id IS NULL
 -- Задача 6
-
-
-
-
-
-
-
+WITH all AS (
+    SELECT 
+        COALESCE(city, 'unknown') AS city,
+        client_id
+    FROM clients 
+)
+SELECT COUNT(city)
+FROM all
+GROUP BY city
+-- Задача 7
+SELECT
+    price * qty - COALESCE(discount, 0) AS total_amount
+FROM sales
+-- Задача 8
+SELECT
+    ticket_id,
+    status
+FROM tickets
+WHERE status is NULL OR status = 'error'
+-- Задача 9
+SELECT * 
+FROM changes
+WHERE old_value IS NOT new_value
+-- Задача 10
+SELECT 
+    email,
+    CASE 
+        WHEN email IS NULL THEN 'Не заполнен'
+        ELSE 'Заполнен'
+    END AS status
+FROM clients
+--JOIN'ы - условия в ON 
+-- Задача 1
+SELECT *
+FROM sales s
+JOIN prices p
+ON s.product_id = p.product_id
+WHERE s.sale_dt <= p.valid_to AND s.sale_dt > p.valid_from
+-- Задача 2
+SELECT *
+FROM payments p
+JOIN commission_rules c
+ON p.amount >= c.amount_from AND p.amount < c.amount_to
+-- Задача 3
+SELECT *, o.amount * r.rate
+FROM operations o
+JOIN rates r
+ON o.operation_dt = r.rate_dt AND o.currency = r.currency
+-- Задача 4
+SELECT *
+FROM orders o
+JOIN client_segments c
+ON o.client_id = c.client_id
+WHERE o.sale_dt <= c.valid_to AND o.sale_dt > c.valid_from
+-- Задача 5
+SELECT *
+FROM orders o
+JOIN promos p
+ON o.client_id = p.client_id
+WHERE o.order_dt <= p.date_to AND o.order_dt > p.date_from
+-- Задача 6
+SELECT *
+FROM bookings b
+JOIN repairs r
+ON b.room_id = r.room_id
+WHERE (b.start_ts <= r.end_ts AND b.start_ts >= r.start_ts) OR (b.end_ts <= r.end_ts AND b.end_ts >= r.start_ts)
+-- Задача 7
+SELECT *
+FROM site_users s
+JOIN crm_users c
+ON LOWER(s.email) = LOWER(c.email)
+-- Задача 8
+SELECT *
+FROM orders o
+JOIN discounts d
+ON o.amount <= d.max_amount AND o.amount > min_amount
+-- Задача 9
+SELECT *
+FROM operations o
+JOIN employee_dept e
+ON o.employee_id = e.employee_id
+WHERE o.operation_dt <= e.valid_to AND o.operation_dt > e.valid_to
+-- Задача 10
+SELECT *
+FROM clients c
+LEFT JOIN orders o
+ON date_part('month', o.order_dt) = 5
+-- GROUP BY
+-- Задача 1
+SELECT 
+    category,
+    COUNT(category) AS count,
+    SUM(amount) AS sum
+FROM orders
+GROUP BY category
+-- Задача 2
+SELECT user_id
+FROM orders
+WHERE order_dt >= DATE '2026-01-01' AND order_dt < DATE '2026-04-01'
+GROUP BY user_id
+HAVING COUNT(DISTINCT DATE_TRUNC('month', order_dt)) = 3
+-- Задача 3
+SELECT AVG(amount)
+FROM payments
+GROUP BY tariff
+HAVING COUNT(payment_id) > 1
+-- Задача 4
+SELECT COUNT(DISTINCT sku_id)
+FROM order_items
+GROUP BY order_id
+-- Задача 5
+SELECT 
+    client_id,
+    COUNT(*) FILTER (WHERE status = 'success') AS success_cnt,
+    COUNT(*) FILTER (WHERE status <> 'success') AS fail_cnt
+FROM payments
+GROUP BY client_id
+-- Задача 6
+SELECT
+    client_id,
+    MIN(order_dt),
+    MAX(order_dt)
+FROM orders
+GROUP BY client_id
+-- Задача 7
+SELECT SUM(amount)
+FROM orders
+GROUP BY DATE_TRUNC('month', order_dt)
+-- Задача 8
+SELECT 
+    client_id,
+    SUM(amount)
+FROM orders
+GROUP BY client_id
+HAVING SUM(amount) > 1000
+-- Задача 9
+WITH all_sum AS (
+    SELECT
+        SUM(amount) AS total_sum
+    FROM orders
+)
+SELECT 
+    category,
+    SUM(amount),
+    SUM(amount) / total_sum
+FROM orders
+GROUP BY category
+-- Задача 10
+WITH all AS(
+    SELECT 
+        client_id,
+        CASE
+            WHEN amount < 1000 THEN 'low'
+            ELSE 'high'
+        END AS level
+    FROM orders
+)
+SELECT 
+    COUNT(*) FILTER (WHERE level = 'low'),
+    COUNT(*) FILTER (WHERE level = 'high')
+FROM all
 
 
 
