@@ -16,3 +16,20 @@ with all_ as (
 select *
 from all_
 where rank < 4
+-- Задача 2
+with all_ as (
+	select 
+		id,
+		department_id,
+		salary,
+		AVG(salary) OVER(partition by department_id) as avg
+	from employees 
+)
+select 
+	a.id,
+	ROUND(a.salary - a.avg) as delta,
+	d.department_name 
+from all_ a
+join departments d 
+on a.department_id = d.department_id 
+where salary > avg

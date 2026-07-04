@@ -387,14 +387,163 @@ SELECT
     COUNT(*) FILTER (WHERE level = 'low'),
     COUNT(*) FILTER (WHERE level = 'high')
 FROM all
-
-
-
-
-
-
-
-
+--ROW_NUMBER 
+-- Задача 1
+WITH all AS (
+    SELECT 
+        entity_id,
+        ROW_NUMBER() OVER(PARTITION BY entity_id ORDER BY event_dt DESC) AS rank
+    FROM history
+)
+SELECT *
+FROM all
+WHERE rank = 1
+-- Задача 2
+WITH all AS (
+    SELECT 
+        client_id,
+        ROW_NUMBER() OVER(PARTITION BY client_id ORDER BY order_dt) AS rank
+    FROM orders
+)
+SELECT *
+FROM all
+WHERE rank < 4
+-- Задача 3
+WITH all AS (
+    SELECT 
+        event_id,
+        ROW_NUMBER() OVER(PARTITION BY user_id, event_id ORDER BY loaded_at DESC) AS rank
+    FROM events
+)
+SELECT *
+FROM all
+WHERE rank = 1
+-- Задача 4
+WITH all AS (
+    SELECT 
+        payment_id,
+        ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY amount DESC) AS rank
+    FROM payments
+)
+SELECT *
+FROM all
+WHERE rank = 1
+-- Задача 5
+WITH all AS (
+    SELECT
+        order_id,
+        ROW_NUMBER() OVER(PARTITION BY client_id ORDER BY order_dt ) AS rank
+    FROM orders
+)
+SELECT *
+FROM all
+WHERE rank = 1
+-- Задача 6
+WITH all AS (
+    SELECT
+        status,
+        ticket_id,
+        ROW_NUMBER() OVER (PARTITION BY ticket_id ORDER BY changed_at DESC) AS rank
+    FROM ticket_status
+)
+SELECT 
+    status,
+    ticket_id
+FROM all
+WHERE rank = 1
+-- Задача 7
+WITH all AS (
+    SELECT 
+        user_id,
+        email,
+        ROW_NUMBER() OVER (PARTITION BY email ORDER BY created_at DESC) AS rank
+    FROM users
+)
+SELECT *
+FROM all
+WHERE rank = 1
+-- Задача 8
+WITH all AS (
+    SELECT
+        order_id,
+        client_id,
+        ROW_NUMBER() OVER (PARTITION BY client_id OVER BY order_dt) AS rank
+    FROM orders
+)
+SELECT *
+FROM all
+WHERE rank = 2
+-- Задача 9
+WITH all AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER(PARTITION BY client_id ORDER BY valid_from DESC) AS rank
+    FROM address_history
+    WHERE valid_from < '2026-04-30'
+)
+SELECT *
+FROM all
+WHERE rank = 1
+-- Задача 10
+WITH all AS (
+    SELECT 
+        *,
+        ROW_NUMBER() OVER(PARTITION BY client_id ORDER BY amount DESC, transaction_id) AS rank
+    FROM transactions
+)
+SELECT *
+FROM all
+WHERE rank = 1
+--RANK / DENSE_RANK 10 задач
+-- Задача 1
+WITH all AS (
+    SELECT
+        *,
+        DENSE_RANK() OVER(PARTITION BY dep_id ORDER BY salary DESC) AS rank
+    FROM employees
+)
+SELECT *
+FROM all
+WHERE rank = 2
+-- Задача 2
+SELECT 
+    *,
+    RANK() OVER(ORDER BY score) AS rank,
+    DENSE_RANK() OVER(ORDER BY score DESC) AS dense_rank
+FROM scores
+-- Задача 3
+WITH all AS (
+    SELECT
+        *,
+        RANK() OVER(ORDER BY revenue DESC) AS rank
+    FROM products
+)
+SELECT *
+FROM all
+WHERE rank < 4
+-- Задача 4
+WITH all AS (
+    SELECT
+        *,
+        DENSE_RANK() OVER(ORDER BY points DESC) AS rank
+    FROM teams
+)
+SELECT *
+FROM all
+-- Задача 5
+WITH all AS (
+    SELECT
+        *,
+        DENSE_RANK() OVER(ORDER BY total_amount) AS rank
+    FROM client_totals
+)
+SELECT *
+FROM all
+WHERE rank = 3
+-- Задача 6
+SELECT 
+    *,
+    
 
 
 
