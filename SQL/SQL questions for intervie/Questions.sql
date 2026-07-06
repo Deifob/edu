@@ -543,16 +543,89 @@ WHERE rank = 3
 -- Задача 6
 SELECT 
     *,
-    
-
-
-
-
-
-
-
-
-
-
+    RANK() OVER(PARTITION BY DATE_TRUNC('month', month_dt), ORDER BY revenue DESC) AS rank
+FROM sales
+-- Задача 7
+WITH all AS (
+    SELECT 
+        name,
+        RANK() OVER(ORDER BY score) AS rank
+    FROM results
+)
+SELECT *
+FROM all
+WHERE rank < 3
+-- Задача 8
+WITH group AS (
+    SELECT 
+        category,
+        SUM(amount) AS summ
+    FROM orders
+    GROUP BY category
+)
+SELECT
+    category,
+    summ,
+    RANK() OVER(ORDER BY summ DESC)
+FROM group
+-- Задача 9
+WITH all AS (
+    SELECT 
+        name,
+        score,
+        RANK() OVER(ORDER BY score DESC) AS rank
+    FROM scores
+)
+SELECT *
+FROM all
+WHERE rank = 1
+-- Задача 10
+WITH all AS (
+    SELECT
+        value,
+        DENSE_RANK() OVER (ORDER BY value DESC) AS rank
+    FROM numbers
+)
+SELECT *
+FROM all
+WHERE rank = 2
+--SUM + OVER
+-- Задача 1
+SELECT 
+    client_id,
+    operation_dt,
+    SUM(amount) OVER(PARTITION BY client_id ORDER BY operation_dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+FROM transactions
+-- Задача 2
+SELECT 
+    category, 
+    revenue,
+    revenue * 1.0 / SUM(revenue) OVER () AS revenue_share
+FROM category_sales
+-- Задача 3
+SELECT 
+    category, 
+    product_id,
+    revenue * 1.0 / SUM(revenue) OVER (PARTITION BY category) AS revenue_share
+FROM product_sales
+-- Задача 4
+SELECT 
+    dt,
+    SUM(revenue) OVER(ORDER BY dt ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)
+FROM daily_sales
+-- Задача 5
+SELECT 
+    account_id,
+    operation_dt,
+    SUM(amount) OVER(PARTITION BY account_id ORDER BY operation_dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+FROM operations
+-- Задача 6
+SELECT 
+    client_id, 
+    order_id,
+    amount,
+    SUM(amount) OVER ()
+FROM orders
+-- Задача 7
 
 
