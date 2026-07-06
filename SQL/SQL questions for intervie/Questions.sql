@@ -627,5 +627,96 @@ SELECT
     SUM(amount) OVER ()
 FROM orders
 -- Задача 7
+SELECT
+    order_dt,
+    amount,
+    SUM(amount) OVER(PARTITION BY DATE_TRUNC('mounth', order_dt))
+FROM orders
+-- Задача 8
+SELECT
+    user_id,
+    earned_at,
+    points,
+    SUM(points) OVER(PARTITION BY user_id ORDER BY earned_at) AS summ
+FROM points
+-- Задача 9
+SELECT 
+    sku_id, 
+    movement_dt, 
+    qty_delta,
+    SUM(qty_delta) OVER (PARTITION BY sku_id ORDER BY movement_dt) AS summ
+FROM stock_movements
+-- Задача 10
+WITH group AS (
+    SELECT 
+        order_dt,
+        SUM(amount) AS summ
+    FROM orders
+    GROUP BY order_dt
+)
+SELECT
+    order_dt,
+    summ,
+    SUM(summ) OVER(ORDER BY order_dt) AS c_summ
+FROM group
+--SELF JOIN
+-- Задача 1
+SELECT
+    t1.employee_id
+FROM employees t1
+JOIN employees t2
+ON t1.department_id = t2.department_id
+    AND t1.birth_dt < t2.birth_dt
+WHERE t2.is_manager = TRUE
+-- Задача 2
+SELECT
+    t1.client_id,
+    t2.client_id
+FROM clients t1
+JOIN clients t2
+ON t1.city = t2.city
+    AND t1.client_id > t2.client_id
+-- Задача 3
+SELECT
+    t1.client_id,
+    t2.client_id
+FROM clients t1
+JOIN clients t2
+ON t1.phone = t2.phone
+    AND t1.client_id > t2.client_id
+-- Задача 4
+SELECT 
+    t1.team, 
+    COUNT(DISTINCT t2.points) + 1 AS place
+FROM teams t1
+LEFT JOIN teams t2 
+ON t2.points > t1.points
+GROUP BY t1.team
+-- Задача 5
+SELECT 
+    t1.product_id,
+    t1.price
+FROM products t1
+JOIN products t2
+ON t2.product_id = 1
+    AND t1.price > t2.price
+-- Задача 6
+SELECT
+    t1.session_id,
+    t2.session_id
+FROM sessions t1
+JOIN sessions t2
+ON t1.user_id = t2.user_id
+    AND ((t1.end_ts < t2.end_ts AND t1.end_ts > t2.start_ts)
+    OR (t1.start_ts < t2.end_ts AND t1.start_ts > t2.start_ts))
+    AND t1.session_id < t2.session_id
+-- Задача 7
+SELECT
+    t1.name,
+    t2.name
+FROM employees t1
+JOIN employees t2
+ON t1.manager_id = t2.employee_id
+
 
 
