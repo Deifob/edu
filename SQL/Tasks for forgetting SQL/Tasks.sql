@@ -33,3 +33,22 @@ from all_ a
 join departments d 
 on a.department_id = d.department_id 
 where salary > avg
+-- Задача 3
+with all_ as (	
+	select 
+		e.first_name,
+		d.department_name ,
+		e.salary,
+		RANK() OVER(partition by e.department_id order by e.salary) as rnk,
+		COUNT(d.department_name) OVER(partition by d.department_name ) as summ
+	from employees e
+	join departments d 
+	on e.department_id = d.department_id 
+)
+select 
+	first_name,
+	department_name,
+	salary
+from all_ 
+where summ > 2 and rnk = 1
+

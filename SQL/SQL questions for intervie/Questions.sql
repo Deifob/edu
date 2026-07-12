@@ -717,6 +717,31 @@ SELECT
 FROM employees t1
 JOIN employees t2
 ON t1.manager_id = t2.employee_id
-
-
-
+-- Задача 8
+SELECT
+    t2.id,
+    COUNT(t1.score)
+FROM scores t1
+JOIN scores t2
+ON t1.score > t2.score
+GROUP BY t2.id
+-- Задача 9
+SELECT 
+    t1.employee_id,
+    t2.employee_id,
+    t1.department_id
+FROM employees t1
+JOIN employees t2
+ON t1.department_id = t2.department_id
+WHERE t1.employee_id != t2.employee_id
+-- Задача 10
+SELECT 
+    t1.order_id,
+    t2.order_id
+FROM orders t1 
+JOIN orders t2
+ON t1.client_id = t2.client_id
+    AND t1.order_id > t2.order_id
+    AND t1.amount > t2.amount
+--Флажки 
+-- Задача 1
