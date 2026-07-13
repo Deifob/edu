@@ -745,3 +745,143 @@ ON t1.client_id = t2.client_id
     AND t1.amount > t2.amount
 --Флажки 
 -- Задача 1
+WITH base AS (
+    SELECT
+        user_id,
+        video_id,
+        CASE 
+            WHEN video_id = 101 THEN 1
+            WHEN video_id = 202 THEN -1
+            ELSE 0
+        END AS flag
+    FROM views
+),
+all_ AS(
+    SELECT 
+        *,
+        SUM(flag) OVER(PARTITION BY user_id) AS summ
+        FROM base
+)
+SELECT *
+FROM all_
+WHERE summ = 1
+-- Задача 2
+WITH base AS (
+    SELECT
+        user_id,
+        event_type,
+        CASE 
+            WHEN event_type = 'purchase' THEN 1
+            WHEN event_type = 'refund' THEN -1
+            ELSE 0
+        END AS flag
+    FROM events
+),
+all_ AS(
+    SELECT 
+        *,
+        SUM(flag) OVER(PARTITION BY user_id) AS summ
+        FROM base
+)
+SELECT *
+FROM all_
+WHERE summ = 1
+-- Задача 3
+SELECT
+    payment_id,
+    CASE 
+        WHEN paid_dt > due_dt THEN 1
+        ELSE 0
+    END AS flag
+FROM payments
+-- Задача 4
+WITH base AS(
+    SELECT
+        student_id,
+        mark,
+        CASE 
+            WHEN mark = 5 THEN 2
+            WHEN mark = 2 THEN 1e-100
+            ELSE 1
+        END AS multiplicate
+    FROM marks
+),
+all_ AS( 
+    SELECT
+        student_id,
+        EXP(SUM(LN(multiplicate))) AS flag
+    FROM base
+    GROUP BY(student_id)
+)
+SELECT
+    student_id,
+    CASE
+        WHEN flag > 1 THEN 1
+        ELSE 0
+    END flag_for_5
+FROM all_
+-- Задача 5
+WITH all_ AS(
+    SELECT
+        client_id,
+        operation_type,
+        CASE 
+            WHEN operation_type = 'debit' THEN 1
+            ELSE 0
+        END debit_flag,
+        CASE
+            WHEN operation_type = 'credit' THEN 1
+            ELSE 0
+        ENd credit_flag
+    FROM operations
+)
+SELECT
+    client_id,
+    SUM(debit_flag) AS count_debit,
+    SUM(credit_flag) AS count_credit
+FROM all_
+GROUP BY client_id
+-- Задача 6
+SELECT user_id
+FROM events
+GROUP BY user_id
+HAVING MAX(CASE WHEN event_type = 'visit' THEN 1 ELSE 0 END) = 1
+    AND MAX(CASE WHEN event_type = 'pay' THEN 1 ELSE 0 END) = 1
+-- Задача 7
+SELECT client_id
+FROM activity
+GROUP BY client_id
+HAVING MAX(CASE WHEN channel = 'web' THEN 1 ELSE 0 END) = 1
+    AND MAX(CASE WHEN channel = 'mobile' THEN 1 ELSE 0 END) = 1
+-- Задача 8
+SELECT
+    client_id,
+    amount,
+    CASE
+        WHEN amount > 1000 THEN 1
+        ELSE 0
+    END AS flag
+FROM orders
+-- Задача 9
+SELECT user_id
+FROM events
+GROUP BY user_id
+HAVING MAX(CASE WHEN event_type = 'registration' THEN 1 ELSE 0 END) = 1
+    MAX(CASE WHEN event_type = 'first_order' THEN 1 ELSE 0 END) = 0
+-- Задача 10
+WITH x AS (
+    SELECT 
+        *,
+        MIN(order_dt) OVER (PARTITION BY client_id) AS first_order_dt
+    FROM orders
+)
+SELECT 
+    client_id, 
+    order_id,
+       CASE 
+        WHEN order_dt = first_order_dt THEN 1 
+        ELSE 0 
+    END AS is_first_order
+FROM x
+-- CASE WHEN
+-- Задача 1

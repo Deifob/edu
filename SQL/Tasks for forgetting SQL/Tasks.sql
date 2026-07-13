@@ -51,4 +51,17 @@ select
 	salary
 from all_ 
 where summ > 2 and rnk = 1
-
+-- Задача 4
+with all_ as(	
+	select 
+		o.order_id,
+		c.customer_name,
+		o.amount,
+		rank() OVER(partition by o.customer_id order by o.amount DESC) as rnk
+	from orders o 
+	join customers c 
+	on o.customer_id = c.customer_id
+)
+select *
+from all_ 
+where amount > 1000
