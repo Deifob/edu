@@ -885,3 +885,90 @@ SELECT
 FROM x
 -- CASE WHEN
 -- Задача 1
+SELECT 
+    *,
+    CASE
+        WHEN amount > 20000 THEN 'high' 
+        WHEN amount > 5000 THEN 'middle'
+        ELSE 'low'
+    END AS flag
+FROM orders
+-- Задача 2
+SELECT
+    *,
+    CASE
+        WHEN age > 60 THEN 'high'
+        WHEN age > 20 THEN 'middle'
+        ELSE 'low'
+    END AS flag
+FROM clients
+-- Задача 3
+SELECT 
+    payment_id,
+    CASE 
+        WHEN status IN ('done', 'ok') THEN 'success'
+        WHEN status IN ('error', 'fail') THEN 'failed'
+        ELSE 'unknown' 
+    END AS business_status
+FROM payments
+-- Задача 4
+SELECT 
+    ticket_id,
+    CASE 
+        WHEN is_vip = TRUE THEN 'high'
+        WHEN hours_left <= 4 THEN 'high'
+        WHEN hours_left <= 24 THEN 'medium'
+        ELSE 'low' 
+    END AS priority
+FROM tickets
+-- Задача 5
+SELECT 
+    sale_id,
+    CASE channel_code
+        WHEN 'W' THEN 'web'
+        WHEN 'M' THEN 'mobile'
+        ELSE 'partner' 
+    END AS channel_name
+FROM sales
+-- Задача 6
+SELECT 
+    client_id,
+    CASE 
+        WHEN activation_date >= DATE '2026-04-23' THEN 'week'
+        WHEN activation_date >= DATE '2026-03-31' THEN 'month'
+        WHEN activation_date >= DATE '2025-04-30' THEN 'year'
+        ELSE 'old' 
+    END AS activation_segment
+FROM clients
+-- Задача 7
+SELECT 
+    client_id,
+    CASE 
+        WHEN days_overdue >= 30 OR debt_amount >= 5000 THEN 'high'
+        WHEN days_overdue > 0 THEN 'medium'
+        ELSE 'low' 
+    END AS risk_group
+FROM debts
+-- Задача 8
+SELECT
+    *,
+    CASE
+        WHEN orders_cnt > 10 THEN 'high'
+        WHEN orders_cnt > 5 THEN 'middle'
+        ELSE 'low'
+    END AS flag
+FROM client_orders
+-- Задача 9
+SELECT
+    *,
+    CASE
+        WHEN stock_cnt > 20 THEN 'high'
+        WHEN stock_cnt > 10 THEN 'middle'
+        ELSE 'low'
+    END AS flag
+FROM stock
+-- Задача 10
+SELECT
+    SUM(CASE WHEN status = 'success' THEN amount ELSE 0 END) AS success_amount,
+    SUM(CASE WHEN status <> 'success' THEN amount ELSE 0 END) AS failed_amount
+FROM payments

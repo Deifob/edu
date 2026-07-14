@@ -65,3 +65,17 @@ with all_ as(
 select *
 from all_ 
 where amount > 1000
+-- Задача 5
+with all_ as(
+	select 
+		e.first_name,
+		d.department_name,
+		e.hire_date,
+		rank() over(partition by d.department_name order by e.hire_date desc ) as rnk
+	from employees e 
+	join departments d 
+	on e.department_id = d.department_id 
+)
+select *
+from all_
+where rnk = 1
