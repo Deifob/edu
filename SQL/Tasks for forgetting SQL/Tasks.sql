@@ -79,3 +79,20 @@ with all_ as(
 select *
 from all_
 where rnk = 1
+-- Задача 6
+with cust as(
+	select 
+		customer_id,
+		SUM(amount) as sum_cust,
+		count(customer_id) as count_cust
+	from orders
+	group by customer_id
+)
+select 
+	cu.customer_name,
+	c.sum_cust,
+	c.sum_cust /(sum(c.sum_cust) over()) as part
+from cust as c
+inner join customers as cu
+on c.customer_id = cu.customer_id 
+where c.count_cust > 1
