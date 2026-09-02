@@ -96,3 +96,28 @@ from cust as c
 inner join customers as cu
 on c.customer_id = cu.customer_id 
 where c.count_cust > 1
+-- Задача 7
+with rang as (
+	select 
+		*,
+		rank() over(partition by department_id order by salary desc) as rnk
+	from employees
+),
+summ as (
+	select
+		department_id,
+		count(id) as cnt
+	from employees
+	group by department_id
+)
+select 
+	r.rnk,
+	1.0*r.rnk/s.cnt as part, 
+	r.salary,
+	d.department_name 
+from rang r
+join departments d 
+on r.department_id = d.department_id 
+join summ s
+on r.department_id = s.department_id 
+where 1.0*r.rnk/s.cnt <= 0.1
