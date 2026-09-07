@@ -121,3 +121,23 @@ on r.department_id = d.department_id
 join summ s
 on r.department_id = s.department_id 
 where 1.0*r.rnk/s.cnt <= 0.1
+-- Задача 8
+with lag_o as(
+	select 
+		o.order_id,
+		c.customer_name,
+		o.order_date,
+		o.order_date - lag(o.order_date) over(partition by o.customer_id order by o.order_date) as delta,
+		row_number() over(partition by o.customer_id) as rnk
+	from orders o
+	join customers c 
+	on o.customer_id = c.customer_id
+)
+select 
+	order_id,
+	customer_name,
+	order_date,
+	delta
+from lag_o 
+where rnk > 1
+order by order_id 
