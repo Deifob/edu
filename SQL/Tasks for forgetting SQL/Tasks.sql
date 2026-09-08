@@ -141,3 +141,27 @@ select
 from lag_o 
 where rnk > 1
 order by order_id 
+-- Задача 9
+with ave_s as(
+	select
+		department_id,
+		round(AVG(salary)) as avg
+	from employees
+	group by department_id
+),
+rnk_s as (
+	select
+		department_id,
+		first_name,
+		last_name,
+		rank() over(partition by department_id order by salary ) as rnk
+	from employees
+)
+select 
+	r.first_name,
+	r.last_name,
+	r.rnk 
+from ave_s a
+join rnk_s r
+on a.department_id = r.department_id
+where a.avg > 50000
