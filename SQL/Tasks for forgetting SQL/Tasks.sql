@@ -165,3 +165,25 @@ from ave_s a
 join rnk_s r
 on a.department_id = r.department_id
 where a.avg > 50000
+-- Задача 10
+with avg_am as (
+	select 
+		AVG(amount) as am
+	from  orders
+),
+count_ord as (
+	select 
+		customer_id,
+		count(customer_id) as ord
+	from  orders
+	where amount > (select am from avg_am)
+	group by customer_id
+)
+select 
+	c.customer_name,
+	count(o.customer_id) 
+from orders o
+join customers c 
+on o.customer_id = c.customer_id 
+where o.customer_id in (select customer_id from count_ord)  
+group by c.customer_name 
