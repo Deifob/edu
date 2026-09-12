@@ -187,3 +187,21 @@ join customers c
 on o.customer_id = c.customer_id 
 where o.customer_id in (select customer_id from count_ord)  
 group by c.customer_name 
+-- Задача 11
+with cte_empl as (
+	select 
+		*,
+		SUM(salary) over(partition by department_id )
+	from employees
+),
+cte_count as (
+	select 
+		department_id,
+		count(department_id) 
+	from employees 
+	group by department_id
+	having count(department_id) > 4
+)
+select *
+from cte_empl
+where department_id in (select department_id from cte_count)
