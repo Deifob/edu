@@ -205,3 +205,20 @@ cte_count as (
 select *
 from cte_empl
 where department_id in (select department_id from cte_count)
+-- Задача 12
+with group_by_month as (
+	select
+		*,
+		AVG(amount) over(partition by date_trunc('month', order_date )) as avg_am
+	from  orders
+)
+select 
+	g.order_id,
+	c.customer_name,
+	g.order_date,
+	g.amount,
+	g.avg_am 
+from group_by_month g
+join customers c 
+on c.customer_id = g.customer_id 
+where amount > avg_am 
