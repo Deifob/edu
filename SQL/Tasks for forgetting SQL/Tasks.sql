@@ -222,3 +222,9 @@ from group_by_month g
 join customers c 
 on c.customer_id = g.customer_id 
 where amount > avg_am 
+-- Задача 13
+select 
+	*,
+	SUM(salary) over(partition by department_id order by hire_date)
+from employees
+
