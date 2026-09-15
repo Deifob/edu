@@ -227,4 +227,13 @@ select
 	*,
 	SUM(salary) over(partition by department_id order by hire_date)
 from employees
+-- Задача 14
+select 
+	c.customer_name,
+	o.amount,
+	rank() over(order by o.amount desc) as rnk
+from orders o
+join customers c 
+on o.customer_id = c.customer_id 
+where amount > 5000
 
