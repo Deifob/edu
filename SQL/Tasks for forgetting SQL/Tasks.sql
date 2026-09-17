@@ -236,4 +236,25 @@ from orders o
 join customers c 
 on o.customer_id = c.customer_id 
 where amount > 5000
+-- Задача 15
+with salary_rnk as(
+	select 
+		id,
+		department_id,
+		salary,
+		hire_date,
+		rank() over(partition by department_id order by hire_date desc) as rnk 
+	from employees
+)
+select 
+	s1.id,
+	s1.salary,
+	s1.hire_date,
+	s2.id,
+	s2.salary,
+	s2.hire_date 
+from salary_rnk s1
+join salary_rnk s2
+on s1.salary > s2.salary and s1.rnk < s2.rnk and s1.department_id = s2.department_id
+
 
