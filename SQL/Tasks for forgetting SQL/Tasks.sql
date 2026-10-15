@@ -256,5 +256,13 @@ select
 from salary_rnk s1
 join salary_rnk s2
 on s1.salary > s2.salary and s1.rnk < s2.rnk and s1.department_id = s2.department_id
+-- Задача 16
+select 
+	customer_id,
+	count(order_id),
+	count(order_id)/sum(count(order_id)) over()
+from orders _
+where date_part('year', order_date) = 2024
+group by customer_id
 
 
