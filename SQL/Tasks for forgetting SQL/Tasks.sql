@@ -264,5 +264,20 @@ select
 from orders _
 where date_part('year', order_date) = 2024
 group by customer_id
-
+-- Задача 19
+with cte_avg as (
+	select 
+		department_id,
+		ROUND(AVG(salary)) as avg_salary,
+		COUNT(id) as count_employee
+	from employees
+	group by department_id
+	having COUNT(id) > 4
+)
+select 
+	department_id,
+	avg_salary,
+	count_employee,
+	rank() over(order by avg_salary DESC) as rnk
+from cte_avg
 
