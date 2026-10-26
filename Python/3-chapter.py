@@ -35,7 +35,25 @@ for i in a:
         n += 1
 print(n)
 #8
-
+n = 100
+while True:
+    n += 1
+    if n % 17 == 0:
+        print(n)
+        break
+#9
+for i in range(1, 31):
+    if i % 4 == 0:
+        continue
+    print(i)
+#10
+amount = 372
+delta = 55
+n = 0
+while amount > 0:
+    n += 1
+    amount -= delta
+print(n)
 
 
 

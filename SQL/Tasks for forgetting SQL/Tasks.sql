@@ -280,4 +280,26 @@ select
 	count_employee,
 	rank() over(order by avg_salary DESC) as rnk
 from cte_avg
+-- ================================================
+--Задача 1
+SELECT
+    oid,
+    amount
+FROM orders
+WHERE status = 'paid'
+AND amount >= 200
+--Задача 2
+SELECT
+    uid,
+    SUM(amount) as revenue
+FROM orders 
+WHERE status = 'paid'
+GROUP BY uis
+--Задача 3
+SELECT
+    uid,
+    COUNT(oid) as n
+FROM orders
+GROUP BY uid
+HAVING COUNT(oid) > 2
 
