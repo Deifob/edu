@@ -25,7 +25,7 @@ print(orel, reshka)
 ответ - предоставленые данные
 апи - правила по котрым клиент делает запросы и получает ответ от сервера
 '''
-#6-7
+#6-10
 import openmeteo_requests
 
 import pandas as pd
